@@ -11,6 +11,7 @@ from rllib.util.training.agent_training import evaluate_agent, train_agent
 from exps.util import parse_config_file
 from hucrl.environment.hallucination_wrapper import HallucinationWrapper
 from hucrl.model.hallucinated_model import HallucinatedModel
+from barl import envs
 
 
 def main(args):
