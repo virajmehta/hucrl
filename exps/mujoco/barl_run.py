@@ -2,6 +2,7 @@
 
 import argparse
 import importlib
+import hydra
 
 from rllib.environment import GymEnvironment
 from rllib.model import TransformedModel
@@ -15,6 +16,7 @@ from barl import envs
 from hucrl.reward.mujoco_rewards import barl_reward_models
 
 
+@hydra.main(config_path="cfg", config_name="config")
 def main(args):
     """Run experiment."""
     set_random_seed(args.seed)
@@ -59,31 +61,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Parameters for H-UCRL.")
-    parser.add_argument(
-        "--agent",
-        type=str,
-        default="BPTT",
-        choices=["BPTT", "MVE", "DataAugmentation", "MPC", "MBMPO"],
-    )
-    parser.add_argument("--agent-config-file", type=str, default="config/bptt.yaml")
-    parser.add_argument(
-        "--env-config-file", type=str, default="config/envs/half-cheetah.yaml"
-    )
-
-    parser.add_argument(
-        "--exploration",
-        type=str,
-        default="optimistic",
-        choices=["optimistic", "expected", "thompson"],
-    )
-
-    parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--train-episodes", type=int, default=250)
-    parser.add_argument("--test-episodes", type=int, default=1)
-    parser.add_argument("--num-threads", type=int, default=1)
-
-    parser.add_argument("--render", action="store_true", default=False)
-
-    parser.add_argument("--beta", type=float, default=1.0)
-    main(parser.parse_args())
+    main()
