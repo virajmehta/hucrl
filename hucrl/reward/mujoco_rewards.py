@@ -213,6 +213,24 @@ class PusherReward(MujocoReward):
         return cur_end
 
 
+class BARLReacherReward(MujocoReward):
+
+    dim_action = 2
+
+    def __init__(self):
+        super().__init__(0)
+
+    def forward(self, state, action, next_state):
+
+        bk = get_backend(state)
+        vec = next_state[..., -2:]
+        reward_dist = -bk.norm(vec, axis=-1)
+        reward_ctrl = -bk.sum(bk.square(actions), axis=-1)
+        reward = reward_dist + reward_ctrl
+        return self.get_reward(reward, self.action_reward(action))
+
+
+
 class ReacherReward(MujocoReward):
     """Reward of Reacher Environment."""
 
@@ -298,5 +316,6 @@ class ReacherReward(MujocoReward):
         return cur_end
 
 barl_reward_models = {
-        'pilcocartpole-v0': PilcoCartPoleReward
+        'pilcocartpole-v0': PilcoCartPoleReward,
+        'bacreacher-v0': BARLReacherReward,
         }
