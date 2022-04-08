@@ -3,6 +3,7 @@
 import argparse
 import importlib
 import hydra
+from hydra.utils import to_absolute_path
 
 from rllib.environment import GymEnvironment
 from rllib.model import TransformedModel
@@ -20,7 +21,7 @@ from hucrl.reward.mujoco_rewards import barl_reward_models
 def main(args):
     """Run experiment."""
     set_random_seed(args.seed)
-    env_config = parse_config_file(args.env_config_file)
+    env_config = parse_config_file(to_absolute_path(args.env_config_file))
 
     environment = GymEnvironment(
         env_config["name"], seed=args.seed
@@ -31,7 +32,7 @@ def main(args):
         environment.add_wrapper(HallucinationWrapper)
     else:
         dynamical_model = TransformedModel.default(environment)
-    kwargs = parse_config_file(args.agent_config_file)
+    kwargs = parse_config_file(to_absolute_path(args.agent_config_file))
 
     agent = getattr(
         importlib.import_module("rllib.agent"), f"{args.agent}Agent"

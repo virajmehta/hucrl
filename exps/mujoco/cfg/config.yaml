@@ -1,7 +1,7 @@
 agent: "MPC"
 name: "default"
-agent-config-file: "config/mpc.yaml"
-env-config-file: "config/envs/barl-cartpole.yaml"
+agent_config_file: "config/agents/mpc.yaml"
+env_config_file: "config/envs/barl-cartpole.yaml"
 exploration: optimistic
 seed: 0
 train_episodes: 250
