@@ -64,6 +64,33 @@ class CartPoleReward(MujocoReward):
         return bk.stack([x0 - self.length * sin, -self.length * (1 + cos)], -1)
 
 
+class PilcoCartPoleReward(MujocoReward):
+    """Reward of Pilco CartPole Environment."""
+
+    dim_action = 1
+
+    def __init__(self, pendulum_length=0.6):
+        super().__init__(0.)
+        self.length = pendulum_length
+
+    def forward(self, state, action, next_state):
+        """See `AbstractReward.forward()'."""
+        bk = get_backend(next_state)
+        position = self._get_ee_pos(next_state[..., 0], next_state[..., 1])
+        goal = bk.Tensor([0.0, self.length])
+        squared_distance = bk.sum((position - goal) ** 2, axis=-1)
+        squared_sigma = 0.25 ** 2
+        costs = 1 - bk.exp(-0.5 * squared_distance / squared_sigma)
+
+        return self.get_reward(-costs, self.action_reward(action))
+
+    def _get_ee_pos(self, x0, theta):
+        bk = get_backend(x0)
+        pole_x = self.length * bk.sin(theta)
+        pole_y = self.length * bk.cos(theta)
+        return bk.stack([x0 + pole_x, pole_y]).T
+
+
 class HalfCheetahReward(MujocoReward):
     """Reward of MBRL HalfCheetah Environment."""
 
@@ -269,3 +296,7 @@ class ReacherReward(MujocoReward):
             cur_end = cur_end + length * new_rot_axis
 
         return cur_end
+
+barl_reward_models = {
+        'pilcocartpole-v0': PilcoCartPoleReward
+        }

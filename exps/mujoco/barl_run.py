@@ -12,6 +12,7 @@ from exps.util import parse_config_file
 from hucrl.environment.hallucination_wrapper import HallucinationWrapper
 from hucrl.model.hallucinated_model import HallucinatedModel
 from barl import envs
+from hucrl.reward.mujoco_rewards import barl_reward_models
 
 
 def main(args):
@@ -19,11 +20,10 @@ def main(args):
     set_random_seed(args.seed)
     env_config = parse_config_file(args.env_config_file)
 
-    breakpoint()
     environment = GymEnvironment(
-        env_config["name"], ctrl_cost_weight=env_config["action_cost"], seed=args.seed
+        env_config["name"], seed=args.seed
     )
-    reward_model = environment.env.reward_model()
+    reward_model = barl_reward_models[env_config['name']]()
     if args.exploration == "optimistic":
         dynamical_model = HallucinatedModel.default(environment, beta=args.beta)
         environment.add_wrapper(HallucinationWrapper)
@@ -46,6 +46,7 @@ def main(args):
         max_steps=env_config["max_steps"],
         num_episodes=args.train_episodes,
         render=args.render,
+        eval_frequency=1,
         print_frequency=1,
     )
 
