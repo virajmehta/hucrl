@@ -1,0 +1,3 @@
+name: plasmatracking-v0
+max_steps: 20
+# action_cost: 0.01
