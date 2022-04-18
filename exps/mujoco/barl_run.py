@@ -32,10 +32,10 @@ def main(args):
         environment.add_wrapper(HallucinationWrapper)
     else:
         dynamical_model = TransformedModel.default(environment)
-    kwargs = parse_config_file(to_absolute_path(args.agent_config_file))
+    kwargs = parse_config_file(to_absolute_path(args.agent.config_file))
 
     agent = getattr(
-        importlib.import_module("rllib.agent"), f"{args.agent}Agent"
+        importlib.import_module("rllib.agent"), f"{args.agent.name}Agent"
     ).default(
         environment=environment,
         dynamical_model=dynamical_model,

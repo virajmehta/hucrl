@@ -1,6 +1,6 @@
-agent: "MPC"
+defaults:
+    - agent: mpc
 name: "default"
-agent_config_file: "config/agents/mpc.yaml"
 env_config_file: "config/envs/barl-cartpole.yaml"
 exploration: optimistic
 seed: 0
@@ -8,7 +8,7 @@ train_episodes: 250
 test_episodes: 10
 num_threads: 1
 render: false
-beta: 1
+beta: 1.
 hydra:
   run:
     dir: experiments/${name}_${now:%Y-%m-%d}/${now:%H-%M-%S}
