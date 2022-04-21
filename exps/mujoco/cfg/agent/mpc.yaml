@@ -1,0 +1,2 @@
+config_file: "config/agents/mpc.yaml"
+name: "MPC"
