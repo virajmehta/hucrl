@@ -258,23 +258,23 @@ class BetaTrackingReward(MujocoReward):
 
     def forward(self, state, action, next_state):
         bk = get_backend(state)
-        betas = next_state[..., BETA_IDX]
+        betas = next_state[..., self.BETA_IDX]
         iqr = 0.8255070447921753
         median = 1.622602
         betas = betas * iqr + median
-        return self.get_reward(-1 * bk.abs(betas - target), self.action_reward(action))
+        return self.get_reward(-1 * bk.abs(betas - self.target), self.action_reward(action))
 
 
 class PlasmaTrackingReward(MujocoReward):
     dim_action = 2
     def __init__(self):
-        self.targets = [0.4544037912481128, 0.515012974224002]
+        self.targets = torch.Tensor([0.4544037912481128, 0.515012974224002])
         self.idxes = [0, 2]
         super().__init__(0)
 
     def forward(self, state, action, next_state):
         bk = get_backend(state)
-        signals = next_state[..., idxes]
+        signals = next_state[..., self.idxes]
         rew = -1 * bk.sum(bk.abs(signals - self.targets), axis=-1)
         return self.get_reward(rew, self.action_reward(action))
 
