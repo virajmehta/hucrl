@@ -19,6 +19,7 @@ from hucrl.reward.mujoco_rewards import barl_reward_models
 
 @hydra.main(config_path="cfg", config_name="config")
 def main(args):
+    from barl import envs
     """Run experiment."""
     set_random_seed(args.seed)
     env_config = parse_config_file(to_absolute_path(args.env_config_file))
