@@ -1,0 +1,2 @@
+name: "BPTT"
+config_file: "config/agents/bptt.yaml"

@@ -224,8 +224,9 @@ class BARLReacherReward(MujocoReward):
 
         bk = get_backend(state)
         vec = next_state[..., -2:]
-        reward_dist = -bk.norm(vec, axis=-1)
-        reward_ctrl = -bk.sum(bk.square(actions), axis=-1)
+        reward_dist = -bk.norm(vec, dim=-1)
+        action = action[..., :2]
+        reward_ctrl = -bk.sum(bk.square(action), dim=-1)
         reward = reward_dist + reward_ctrl
         return self.get_reward(reward, self.action_reward(action))
 
@@ -235,6 +236,7 @@ class PendulumReward(MujocoReward):
     def __init__(self):
         super().__init__(0)
 
+    @staticmethod
     def angle_normalize(x):
         return ((x + np.pi) % (2 * np.pi)) - np.pi
 
@@ -242,7 +244,8 @@ class PendulumReward(MujocoReward):
         bk = get_backend(state)
         th = next_state[..., 0]
         thdot = next_state[..., 1]
-        costs = angle_normalize(th) ** 2 + 0.1 * thdot ** 2 + 0.001 * (action ** 2)
+        action = action[..., 0]
+        costs = self.angle_normalize(th) ** 2 + 0.1 * thdot ** 2 + 0.001 * (action ** 2)
         return self.get_reward(-costs, self.action_reward(action))
 
 
@@ -255,11 +258,11 @@ class BetaTrackingReward(MujocoReward):
 
     def forward(self, state, action, next_state):
         bk = get_backend(state)
-        betas = next_state[..., BETA_IDX]
+        betas = next_state[..., self.BETA_IDX]
         iqr = 0.8255070447921753
         median = 1.622602
         betas = betas * iqr + median
-        return self.get_reward(-1 * bk.abs(betas - target), self.action_reward(action))
+        return self.get_reward(-1 * bk.abs(betas - self.target), self.action_reward(action))
 
 
 class BetaRotationTrackingReward(MujocoReward):
@@ -284,13 +287,13 @@ class BetaRotationTrackingReward(MujocoReward):
 class PlasmaTrackingReward(MujocoReward):
     dim_action = 2
     def __init__(self):
-        self.targets = [0.4544037912481128, 0.515012974224002]
+        self.targets = torch.Tensor([0.4544037912481128, 0.515012974224002])
         self.idxes = [0, 2]
         super().__init__(0)
 
     def forward(self, state, action, next_state):
         bk = get_backend(state)
-        signals = next_state[..., idxes]
+        signals = next_state[..., self.idxes]
         rew = -1 * bk.sum(bk.abs(signals - self.targets), axis=-1)
         return self.get_reward(rew, self.action_reward(action))
 
