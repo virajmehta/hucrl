@@ -265,6 +265,25 @@ class BetaTrackingReward(MujocoReward):
         return self.get_reward(-1 * bk.abs(betas - self.target), self.action_reward(action))
 
 
+class BetaRotationTrackingReward(MujocoReward):
+    dim_action = 2
+    BETA_IDX = 0
+    ROT_IDX = 1
+    BETA_TGT_IDX = 8
+    ROT_TGT_IDX = 9
+    def __init__(self):
+        super().__init__(0)
+
+    def forward(self, state, action, next_state):
+        bk = get_backend(state)
+        betas = next_state[..., BETA_IDX]
+        rots = next_state[..., ROT_IDX]
+        beta_tgts = next_state[..., BETA_TGT_IDX]
+        rot_tgts = next_state[..., ROT_TGT_IDX]
+        return self.get_reward(-1 * (bk.abs(betas - beta_tgts) + bk.abs(rots - rot_tgts)),
+                               self.action_reward(action))
+
+
 class PlasmaTrackingReward(MujocoReward):
     dim_action = 2
     def __init__(self):
