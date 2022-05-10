@@ -388,4 +388,5 @@ barl_reward_models = {
         'betatracking-v0': BetaTrackingReward,
         'bacpendulum-v0': PendulumReward,
         'plasmatracking-v0': PlasmaTrackingReward,
+        'newbetarotation-v0': BetaRotationTrackingReward,
         }
